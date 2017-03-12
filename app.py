@@ -119,4 +119,4 @@ def scrape_for_recipes():
     return get_all_recipes()
 '''
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=33507)
