@@ -9,8 +9,8 @@ import os
 
 app = Flask(__name__)
 
-app.config['MONGO_DBNAME'] = 'restdb'
-app.config['MONGO_URI'] = 'mongodb://localhost:27017/restdb'
+app.config['MONGO_DBNAME'] = 'heroku_pf2587vq'
+app.config['MONGO_URI'] = 'mongodb://turnipthebeets:turnipto11@ds127260.mlab.com:27260/heroku_pf2587vq'
 
 mongo = PyMongo(app)
 

@@ -35,19 +35,22 @@ def cupConversionDict():
 			item_dict[line[0]] = float(line[1])
 	return item_dict
 
-try:
-        conn  = pymongo.MongoClient()
-        print("Connected Successfully!!")
-except e:
-        print("Error encountered while connecting to MongoDB:" + e)
 
 if len(sys.argv) > 1:
 	url_main = sys.argv[1]
+DB_NAME = 'heroku_w26bwb75'  
+DB_HOST = 'ds129030.mlab.com'
+DB_PORT = 29030
+DB_USER = 'heroku_w26bwb75'
+DB_PASS = 'i8jeeblr2rai5ab8h8n4ts7to3'
 
-recipesdb = conn['restdb']
-recipe_collection = recipesdb['recipes']
-ingredient_collection = recipesdb['ingredients']
-ingredient_collection.create_index( 'ingredient' )
+connection = pymongo.MongoClient(DB_HOST, DB_PORT)
+db = connection[DB_NAME]
+db.authenticate(DB_USER, DB_PASS)
+
+recipe_collection = db['recipes']
+ingredient_collection = db['ingredients']
+#ingredient_collection.create_index( 'ingredient' )
 
 if clear_database:
         recipe_collection.delete_many({})
