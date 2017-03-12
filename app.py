@@ -3,7 +3,7 @@ from flask import jsonify
 from flask import request
 from flask_pymongo import PyMongo
 from pop_inventory.pop_inv import popInventory
-from scraper.scraper import scrape
+#from scraper.scraper import scrape
 from recommendations.recommend import recommend_recipes
 import os
 
