@@ -1,23 +1,28 @@
 from flask import Flask
 from flask import jsonify
 from flask import request
-from flask_pymongo import PyMongo
 from pop_inventory.pop_inv import popInventory
+import PyMongo
 #from scraper.scraper import scrape
 from recommendations.recommend import recommend_recipes
 import os
 
 app = Flask(__name__)
 
-app.config['MONGO_DBNAME'] = 'heroku_pf2587vq'
-app.config['MONGO_URI'] = 'mongodb://turnipthebeets:turnipto11@ds127260.mlab.com:27260/heroku_pf2587vq'
+DB_NAME = 'heroku_w26bwb75'  
+DB_HOST = 'ds129030.mlab.com'
+DB_PORT = 29030
+DB_USER = 'heroku_w26bwb75'
+DB_PASS = 'i8jeeblr2rai5ab8h8n4ts7to3'
 
-mongo = PyMongo(app)
+connection = pymongo.MongoClient(DB_HOST, DB_PORT)
+db = connection[DB_NAME]
+db.authenticate(DB_USER, DB_PASS)
 
 #Get full inventory
 @app.route('/inventory', methods=['GET'])
 def get_all_inventory_items():
-    inventory = mongo.db.inventory
+    inventory = db.inventory
     output = []
     for s in inventory.find():
         output.append({'item' : s['item'], 'mass' : s['mass']})
@@ -26,7 +31,7 @@ def get_all_inventory_items():
 #Modify single item
 @app.route('/inventory/', methods=['POST'])
 def modify_inventory_item():
-    inventory = mongo.db.inventory
+    inventory = db.inventory
     item = request.json['item']
     mass = request.json['mass']
     table_item = inventory.find_one({'item' : item})
@@ -48,22 +53,22 @@ def modify_inventory_item():
 #Populate inventory with default stuff.
 @app.route('/pop_inventory', methods=['POST'])
 def PI():
-    inventory = mongo.db.inventory
+    inventory = db.inventory
     popInventory(inventory)
     return get_all_inventory_items()
 
 #reset the inventory
 @app.route('/reset_inventory', methods=['POST'])
 def reset_inventory():    
-    inventory = mongo.db.inventory
+    inventory = db.inventory
     inventory.remove({})
     return 'Reset the inventory'
 
 #show_all_recipes
 @app.route('/all_recipes', methods=['GET'])
 def get_all_recipes():
-    recipes = mongo.db.recipes
-    ingredients = mongo.db.ingredients
+    recipes = db.recipes
+    ingredients = db.ingredients
     recipe_list = []
     ingredient_list = []
     for s in recipes.find():
@@ -75,11 +80,11 @@ def get_all_recipes():
 #actual recommended recipes, assuming single database.
 @app.route('/recommended_recipes', methods=['POST'])
 def get_recommended_recipes():
-    inventory_collection = mongo.db.inventory
+    inventory_collection = db.inventory
     num_servings = request.json['servings']
-    recipe_collection = mongo.db.recipes
-    ingredient_collection = mongo.db.ingredients
-    old_recommend_collection = mongo.db.old_recommendations
+    recipe_collection = db.recipes
+    ingredient_collection = db.ingredients
+    old_recommend_collection = db.old_recommendations
     recommended_list, missing_recipes, missing_items = recommend_recipes(inventory_collection,recipe_collection,ingredient_collection,old_recommend_collection, num_servings)
     
     rec_list = []
@@ -108,8 +113,8 @@ def get_recommended_recipes():
 '''
 @app.route('/scrape', methods=['POST'])
 def scrape_for_recipes():
-    recipes = mongo.db.recipes
-    ingredients = mongo.db.ingredients
+    recipes = db.recipes
+    ingredients = db.ingredients
     print(scrape(recipes,ingredients))
     return get_all_recipes()
 '''
