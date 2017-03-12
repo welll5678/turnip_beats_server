@@ -1,0 +1,18 @@
+apple,3
+egg,0
+steak,2
+orange,0
+broccoli,5
+cucumber,5
+tomato sauce,5
+tomato,9
+potato,0
+banana,0
+chicken leg,6
+pork chops, 4
+carrot,10
+celery, 5
+bell pepper,10
+onion,5
+garlic,5
+mushroom,10

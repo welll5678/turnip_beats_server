@@ -1,0 +1,10 @@
+broccoli,38
+cabbage,101
+carrot,130
+celery,113
+cucumber,113
+mushroom,82
+onion,113
+potatoes,226
+spinach,500
+tomato, 302

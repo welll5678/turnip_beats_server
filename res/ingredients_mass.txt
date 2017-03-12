@@ -1,0 +1,26 @@
+apple,100
+egg,60
+steak,340
+orange,131
+cucumber,300
+tomato,145
+potato,160
+banana,116
+chicken leg,250
+chicken breast,150
+chicken wing,89
+pork chops,170
+pork loin,170
+#Pork ribs
+#Lamb
+#Fish
+#Shrimp
+carrot,70
+celery,450
+bell pepper,100
+onion,200
+garlic,15
+mushroom,40
+#spinach
+cabbage,1000
+
