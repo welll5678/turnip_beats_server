@@ -2,9 +2,11 @@ from flask import Flask
 from flask import jsonify
 from flask import request
 from pop_inventory.pop_inv import popInventory
+import tensorflow as tf
 import pymongo
 #from scraper.scraper import scrape
 from recommendations.recommend import recommend_recipes
+from classifier.label_image import *
 import os
 
 app = Flask(__name__)
@@ -18,6 +20,9 @@ DB_PASS = 'i8jeeblr2rai5ab8h8n4ts7to3'
 connection = pymongo.MongoClient(DB_HOST, DB_PORT)
 db = connection[DB_NAME]
 db.authenticate(DB_USER, DB_PASS)
+sess = tf.Session()
+
+sess, sm_tensor = initialize_session(sess, 'res/apple.jpg')
 
 #Get full inventory
 @app.route('/inventory', methods=['GET'])
@@ -32,8 +37,14 @@ def get_all_inventory_items():
 @app.route('/inventory/', methods=['POST'])
 def modify_inventory_item():
     inventory = db.inventory
+
+######################
+    # THIS IS THE ACTUAL THING YOU SEND
     item = request.json['item']
     mass = request.json['mass']
+###########
+
+
     table_item = inventory.find_one({'item' : item})
     if table_item:
         item_id = inventory.update({
@@ -81,7 +92,11 @@ def get_all_recipes():
 @app.route('/recommended_recipes', methods=['POST'])
 def get_recommended_recipes():
     inventory_collection = db.inventory
+
+##############################
+    #THIS IS WHAT YOU SEND ME
     num_servings = request.json['servings']
+#################################
     recipe_collection = db.recipes
     ingredient_collection = db.ingredients
     old_recommend_collection = db.old_recommendations
@@ -108,6 +123,13 @@ def get_recommended_recipes():
             missing_ingred_list.append({'item':item, 'mass': missing_items[recipe][item]})
         missing_rec_list.append({'name' : rec['recipe'], 'url' : rec['url'], 'ingredients': ingred_list, 'shoppinglist':missing_ingred_list})
     return jsonify({'complete': rec_list, 'incomplete': missing_rec_list})
+
+@app.route('/classify', methods=['POST'])
+def classify():
+    f = request.files['file']
+    image_data = f.read()
+    label = classify_image(sess, sm_tensor, image_data)
+    return jsonify({'label': label})
 #scraper.
 
 '''
