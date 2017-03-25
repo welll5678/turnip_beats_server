@@ -2,11 +2,12 @@ from flask import Flask
 from flask import jsonify
 from flask import request
 from pop_inventory.pop_inv import popInventory
-import tensorflow as tf
+#import tensorflow as tf
 import pymongo
-#from scraper.scraper import scrape
+
+from scraper.scraper import scrape
 from recommendations.recommend import recommend_recipes
-from classifier.label_image import *
+#from classifier.label_image import *
 import os
 
 app = Flask(__name__)
@@ -20,9 +21,9 @@ DB_PASS = 'i8jeeblr2rai5ab8h8n4ts7to3'
 connection = pymongo.MongoClient(DB_HOST, DB_PORT)
 db = connection[DB_NAME]
 db.authenticate(DB_USER, DB_PASS)
-sess = tf.Session()
+#sess = tf.Session()
 
-sess, sm_tensor = initialize_session(sess, 'res/apple.jpg')
+#sess, sm_tensor = initialize_session(sess, 'res/apple.jpg')
 
 #Get full inventory
 @app.route('/inventory', methods=['GET'])
@@ -123,7 +124,7 @@ def get_recommended_recipes():
             missing_ingred_list.append({'item':item, 'mass': missing_items[recipe][item]})
         missing_rec_list.append({'name' : rec['recipe'], 'url' : rec['url'], 'ingredients': ingred_list, 'shoppinglist':missing_ingred_list})
     return jsonify({'complete': rec_list, 'incomplete': missing_rec_list})
-
+'''
 @app.route('/classify', methods=['POST'])
 def classify():
     f = request.files['file']
@@ -139,7 +140,7 @@ def scrape_for_recipes():
     ingredients = db.ingredients
     print(scrape(recipes,ingredients))
     return get_all_recipes()
-'''
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
