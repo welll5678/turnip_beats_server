@@ -1,22 +1,22 @@
-broccoli
 bell pepper
 apple
+fish
+pork
+carrot
 chicken
 spinach
-shrimp
-eggs
-tomatoes
-onion
-pork
+celery
 orange
 lamb rack
-cabbage
-garlic
-fish
-cucumber
-steak
 banana
-potato
-celery
+tomatoes
 mushroom
-carrot
+eggs
+cucumber
+cabbage
+broccoli
+onion
+potato
+shrimp
+garlic
+steak
