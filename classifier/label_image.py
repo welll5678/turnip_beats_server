@@ -27,13 +27,20 @@ def initialize_session(sess, image_path):
 
     return sess,softmax_tensor
 
-def classify_image(sess, softmax_tensor, image_data, rejection_threshold = 0.3):
+def classify_image(sess, softmax_tensor, image_data, rejection_threshold = 0):
     predictions = sess.run(softmax_tensor, \
             {'DecodeJpeg/contents:0': image_data})
     # Sort to show labels of first prediction in order of confidence
     top_k = predictions[0].argsort()[-len(predictions[0]):][::-1]
     label_lines = [line.rstrip() for line 
                        in tf.gfile.GFile("res/retrained_labels.txt")]
+    labels = []
+    scores = []
+    for i in range(5):
+        labels.append(label_lines[top_k[i]])
+        scores.append(predictions[0][top_k[i]])
+    print(labels)
+    print(scores)
     if  predictions[0][top_k[0]] > rejection_threshold:
         return label_lines[top_k[0]]
     else:
