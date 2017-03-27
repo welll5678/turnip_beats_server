@@ -5,6 +5,8 @@ from flask import abort
 from pop_inventory.pop_inv import popInventory
 import tensorflow as tf
 import pymongo
+import logging
+import sys
 
 #from scraper.scraper import scrape
 from recommendations.recommend import recommend_recipes
@@ -12,7 +14,8 @@ from classifier.label_image import *
 import os
 
 app = Flask(__name__)
-
+app.logger.addHandler(logging.StreamHandler(sys.stdout))
+app.logger.setLevel(logging.ERROR)
 DB_NAME = 'heroku_w26bwb75'  
 DB_HOST = 'ds129030.mlab.com'
 DB_PORT = 29030
