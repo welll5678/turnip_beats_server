@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import jsonify
 from flask import request
+from flask import abort
 from pop_inventory.pop_inv import popInventory
 import tensorflow as tf
 import pymongo
@@ -39,29 +40,53 @@ def get_all_inventory_items():
 def modify_inventory_item():
     inventory = db.inventory
 
-######################
-    # THIS IS THE ACTUAL THING YOU SEND
-    item = request.json['item']
-    mass = request.json['mass']
-###########
+    if 'item' in request.json:
 
+    ######################
+        # THIS IS THE ACTUAL THING YOU SEND
+        item = request.json['item']
+        mass = request.json['mass']
+    ###########
 
-    table_item = inventory.find_one({'item' : item})
-    if table_item:
-        item_id = inventory.update({
-        'item': table_item['item']
-        },{
-        '$set': {
-            'mass': table_item['mass'] + mass
-        }
-        }, upsert=False, multi=False)
-    else:
-        item_id = inventory.insert({'item': item, 'mass': mass})
+        table_item = inventory.find_one({'item' : item})
+        if table_item:
+            item_id = inventory.update({
+            'item': table_item['item']
+            },{
+            '$set': {
+                'mass': table_item['mass'] + mass
+            }
+            }, upsert=False, multi=False)
+        else:
+            item_id = inventory.insert({'item': item, 'mass': mass})
 
-    inv_item = inventory.find_one({'item': item})
-    output = {'item' : inv_item['item'], 'mass' : inv_item['mass']}
-    return jsonify({'result' : output})
-
+        inv_item = inventory.find_one({'item': item})
+        output = {'item' : inv_item['item'], 'mass' : inv_item['mass']}
+        return jsonify({'result' : output})
+    elif 'inventory' in request.json:
+        inv_list = []
+        ######################
+            # THIS IS THE ACTUAL THING YOU SEND
+        inv_diff = request.json['inventory']
+        ###########
+        for ingred in inv_diff:            
+            item = ingred['item']
+            mass = ingred['mass']
+            table_item = inventory.find_one({'item' : item})
+            if table_item:
+                item_id = inventory.update({
+                'item': table_item['item']
+                },{
+                '$set': {
+                    'mass': table_item['mass'] + mass
+                }
+                }, upsert=False, multi=False)
+            else:
+                item_id = inventory.insert({'item': item, 'mass': mass})
+            inv_item = inventory.find_one({'item': item})
+            inv_list.append({'item' : inv_item['item'], 'mass' : inv_item['mass']})
+        return jsonify({'inventory':inv_list})
+    abort(404)
 #Populate inventory with default stuff.
 @app.route('/pop_inventory', methods=['POST'])
 def PI():
@@ -118,7 +143,8 @@ def get_recommended_recipes():
         ingred_list = []
         rec = recipe_collection.find_one({'recipe':recipe})
         for ing in ingredient_collection.find({'recipe': recipe}):
-            ingred_list.append({'item': ing['ingredient'], 'mass': ing['mass']*num_servings})
+            if ing['ingredient'] not in missing_items[recipe]:
+                ingred_list.append({'item': ing['ingredient'], 'mass': ing['mass']*num_servings})
         missing_ingred_list = []
         for item in missing_items[recipe]:
             missing_ingred_list.append({'item':item, 'mass': missing_items[recipe][item]})
@@ -141,4 +167,4 @@ def scrape_for_recipes():
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port, debug=(port==5000))
