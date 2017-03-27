@@ -27,7 +27,7 @@ def initialize_session(sess, image_path):
 
     return sess,softmax_tensor
 
-def classify_image(sess, softmax_tensor, image_data, rejection_threshold = 0.5):
+def classify_image(sess, softmax_tensor, image_data, rejection_threshold = 0.3):
     predictions = sess.run(softmax_tensor, \
             {'DecodeJpeg/contents:0': image_data})
     # Sort to show labels of first prediction in order of confidence
