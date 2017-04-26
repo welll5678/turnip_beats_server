@@ -1,22 +1,21 @@
+cabbage
 bell pepper
 apple
-fish
-pork
-carrot
-chicken
-spinach
-celery
-orange
-lamb rack
-banana
-tomatoes
 mushroom
-eggs
-cucumber
-cabbage
-broccoli
-onion
 potato
-shrimp
+fish
+spinach
+bacon
+onion
+banana
+celery
+eggs
+carrot
+cucumber
+orange
 garlic
+chicken
 steak
+lamb rack
+broccoli
+shrimp
