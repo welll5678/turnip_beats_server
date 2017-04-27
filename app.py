@@ -157,10 +157,12 @@ def get_recommended_recipes():
 
 @app.route('/threshold', methods=['POST'])
 def adjust_threshold():
+    global rejection_threshold
     if 'threshold' in request.json:
         threshold = float(request.json['threshold'])
         if threshold < 1 and threshold >= 0:
             rejection_threshold = threshold
+            print("Threshold")
     return jsonify({'threshold':rejection_threshold})
 
 @app.route('/classify', methods=['POST'])
