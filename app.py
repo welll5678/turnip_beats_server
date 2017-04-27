@@ -28,7 +28,7 @@ db.authenticate(DB_USER, DB_PASS)
 sess = tf.Session()
 
 sess, sm_tensor = initialize_session(sess, 'res/apple.jpg')
-
+rejection_threshold = 0.5
 #Get full inventory
 @app.route('/inventory', methods=['GET'])
 def get_all_inventory_items():
@@ -50,22 +50,23 @@ def modify_inventory_item():
         item = request.json['item']
         mass = request.json['mass']
     ###########
+        if item != 'Error':
+            table_item = inventory.find_one({'item' : item})
+            if table_item:
+                item_id = inventory.update({
+                'item': table_item['item']
+                },{
+                '$set': {
+                    'mass': table_item['mass'] + mass
+                }
+                }, upsert=False, multi=False)
+            else:
+                item_id = inventory.insert({'item': item, 'mass': mass})
 
-        table_item = inventory.find_one({'item' : item})
-        if table_item:
-            item_id = inventory.update({
-            'item': table_item['item']
-            },{
-            '$set': {
-                'mass': table_item['mass'] + mass
-            }
-            }, upsert=False, multi=False)
-        else:
-            item_id = inventory.insert({'item': item, 'mass': mass})
-
-        inv_item = inventory.find_one({'item': item})
-        output = {'item' : inv_item['item'], 'mass' : inv_item['mass']}
-        return jsonify({'result' : output})
+            inv_item = inventory.find_one({'item': item})
+            output = {'item' : inv_item['item'], 'mass' : inv_item['mass']}
+            return jsonify({'result' : output})
+        return jsonify({'result':'Error not put in inventory'})
     elif 'inventory' in request.json:
         inv_list = []
         ######################
@@ -74,7 +75,7 @@ def modify_inventory_item():
         ###########
         for ingred in inv_diff:            
             item = ingred['item']
-            mass = ingred['mass']
+            mass = ingred['mass'] 
             table_item = inventory.find_one({'item' : item})
             if table_item:
                 item_id = inventory.update({
@@ -154,12 +155,21 @@ def get_recommended_recipes():
         missing_rec_list.append({'name' : rec['recipe'], 'url' : rec['url'], 'ingredients': ingred_list, 'shoppinglist':missing_ingred_list})
     return jsonify({'complete': rec_list, 'incomplete': missing_rec_list})
 
+@app.route('/threshold', methods=['POST'])
+def adjust_threshold():
+    if 'threshold' in request.json:
+        threshold = float(request.json['threshold'])
+        if threshold < 1 and threshold >= 0:
+            rejection_threshold = threshold
+    return jsonify({'threshold':rejection_threshold})
+
 @app.route('/classify', methods=['POST'])
 def classify():
     f = request.files['file']
     image_data = f.read()
-    label = classify_image(sess, sm_tensor, image_data)
-    return jsonify({'label': label})
+    label = classify_image(sess, sm_tensor, image_data, rejection_threshold)
+    print("Object classified as {} with threshold {}".format(rejection_threshold))
+    return jsonify({'label': label,'threshold':rejection_threshold})
 
 @app.route('/scrape', methods=['POST'])
 def scrape_for_recipes():
