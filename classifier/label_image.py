@@ -44,7 +44,7 @@ def classify_image(sess, softmax_tensor, image_data, rejection_threshold = 0.5):
     if  predictions[0][top_k[0]] > rejection_threshold:
         if label_lines[top_k[0]] = 'eggs':
             if predictions[0][top[0]] < 0.75:
-                return error:
+                return error
         return label_lines[top_k[0]]
     else:
         return "Error"
