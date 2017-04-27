@@ -168,7 +168,7 @@ def classify():
     f = request.files['file']
     image_data = f.read()
     label = classify_image(sess, sm_tensor, image_data, rejection_threshold)
-    print("Object classified as {} with threshold {}".format(rejection_threshold))
+    print("Object classified as {} with threshold {}".format(label,rejection_threshold))
     return jsonify({'label': label,'threshold':rejection_threshold})
 
 @app.route('/scrape', methods=['POST'])
@@ -180,4 +180,4 @@ def scrape_for_recipes():
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=(port==5000))
+    app.run(host='0.0.0.0', port=port, debug=(port==5000))s
