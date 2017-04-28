@@ -1,8 +1,10 @@
 # Turnip The Beets:
 
-Serverside code: A Python-Flask app with a MongoDB Backend.
+Serverside application for recommendation, classification, and storage
 
-### Contrbutors:
+Programmed in Python, API done in Flask, with MongoDB as a backend
+
+### Contributors:
 
 Raymond Ly - Recommendation Algorithm, Scraper, and Inventory Managment
 
